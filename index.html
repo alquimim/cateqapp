@@ -3,213 +3,295 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CateqApp - Meu Caderno Digital do Catequista</title>
-    <!-- Chosen Palette: Vermelho Vibrante, Bege Médio, Bege Claro/Areia, Branco Puro, Cinza Escuro (Grafite) -->
-    <!-- Application Structure Plan: A aplicação é uma SPA de múltiplas etapas. O fluxo inicia na tela principal (main-content), avança para a seleção de comunidade (community-selection-view) e, finalmente, para a exibição do formulário de presença (form-view) se a comunidade selecionada contiver o catequista 'Wellington'. Para as comunidades que não contêm 'Wellington', uma mensagem de não autorizado é exibida. Esta estrutura foi escolhida para simplificar o processo de registro, tornando-lo mais intuitivo e validando a adesão dos catequistas de forma mais direta. A navegação é controlada por botões de ação e um botão 'Voltar' contextual. -->
-    <!-- Visualization & Content Choices: Apenas o nome do aplicativo 'CateqApp' estilizado é o principal elemento visual. Mensagens de boas-vindas e títulos de seção fornecem contexto textual. Botões dinâmicos para seleção de comunidade são os principais elementos interativos. O formulário de presença é embutido via iframe para o cenário de 'Wellington'. A apresentação é direta e funcional, focando na usabilidade e na validação da hipótese principal. CONFIRMING: NO SVG graphics used. NO Mermaid JS used. -->
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <title>CateqApp</title>
+    <!-- Carrega o Tailwind CSS via CDN para estilização -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Carrega a fonte Inter do Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        /* Define a fonte Inter como padrão para todo o corpo da página */
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #F5F5F5;
+            /* Aplica a cor de fundo principal 'Bege Claro/Areia' (#F5DEB3) */
+            background-color: #F5DEB3;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Alinha ao topo para permitir rolagem se o conteúdo for grande */
+            min-height: 100vh; /* Garante que o corpo ocupe pelo menos a altura da viewport */
+            padding: 20px; /* Adiciona um padding geral para o conteúdo não colar nas bordas */
+            box-sizing: border-box; /* Inclui padding na largura/altura total */
         }
-        :root {
-            --color-red-vibrant: #CC0000;
-            --color-beige-medium: #D2B48C;
-            --color-beige-light: #F5DEB3;
-            --color-white-pure: #FFFFFF;
-            --color-gray-dark: #333333;
-            --stroke-red-dark: #990000;
-            --stroke-beige-dark: #B09270;
-            --stroke-beige-medium-dark: #A08B6B;
-        }
-        .text-red-vibrant { color: var(--color-red-vibrant); }
-        .bg-red-vibrant { background-color: var(--color-red-vibrant); }
-        .text-beige-medium { color: var(--color-beige-medium); }
-        .bg-beige-medium { background-color: var(--color-beige-medium); }
-        .text-beige-light { color: var(--color-beige-light); }
-        .bg-beige-light { background-color: var(--color-beige-light); }
-        .text-gray-dark { color: var(--color-gray-dark); }
 
-        /* Estilos para o iframe do formulário */
-        .form-container {
-            width: 100%;
-            max-width: 950px; /* Largura máxima conforme solicitado */
-            height: 1284px; /* Altura fixa conforme solicitado */
-            border: none;
-            overflow: auto; /* Permite rolagem interna se o conteúdo exceder a altura */
-            margin-left: auto; /* Centraliza o contêiner */
-            margin-right: auto; /* Centraliza o contêiner */
+        /* Estilo para o logo CateqApp, mesclando as cores */
+        .cateqapp-logo {
+            font-size: 3rem; /* Tamanho da fonte */
+            font-weight: 800; /* Negrito */
+            text-align: center; /* Centraliza o texto */
+            /* Aplica um gradiente de texto usando as cores da identidade visual */
+            background: linear-gradient(to right, #CC0000, #D2B48C);
+            -webkit-background-clip: text; /* Recorta o fundo para o texto */
+            -webkit-text-fill-color: transparent; /* Torna o texto transparente para mostrar o fundo */
+            color: #CC0000; /* Cor de fallback caso o gradiente não seja suportado */
         }
-        @media (max-width: 768px) {
-            .form-container {
-                height: 90vh; /* Ajuste a altura para telas menores, permitindo rolagem */
-                max-height: 1284px; /* Mantém a altura máxima */
+
+        /* Estilo para o iframe do Google Forms para ser responsivo */
+        .google-forms-iframe {
+            width: 100%;
+            height: 80vh; /* Ocupa 80% da altura da viewport */
+            border: none;
+            border-radius: 0.75rem; /* rounded-lg */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
+        }
+
+        /* Estilo para esconder páginas */
+        .hidden-page {
+            display: none;
+        }
+
+        /* Estilo para o contêiner principal do aplicativo */
+        .app-container {
+            background-color: #FFFFFF; /* Fundo branco puro */
+            border-radius: 1rem; /* Cantos mais arredondados para o contêiner principal */
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); /* Sombra mais proeminente */
+            padding: 2.5rem; /* Padding interno generoso */
+            max-width: 90%; /* Largura máxima para telas maiores */
+            width: 100%; /* Ocupa a largura total disponível */
+            margin-top: 20px; /* Espaçamento do topo */
+            margin-bottom: 20px; /* Espaçamento da base */
+            box-sizing: border-box;
+        }
+
+        /* Ajustes responsivos para o contêiner principal */
+        @media (min-width: 768px) {
+            .app-container {
+                max-width: 768px; /* Largura máxima para tablets */
             }
         }
-        /* Estilos para o contêiner do logo do Canva */
-        .canva-logo-container {
-            position: relative;
-            width: 100%;
-            height: 0;
-            padding-top: 56.5217%; /* Aspect ratio do logo */
-            padding-bottom: 0;
-            box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16);
-            margin-top: 1.6em;
-            margin-bottom: 0.9em;
-            overflow: hidden;
-            border-radius: 8px;
-            will-change: transform;
+        @media (min-width: 1024px) {
+            .app-container {
+                max-width: 900px; /* Largura máxima para desktops */
+            }
         }
-        .canva-logo-container iframe {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            border: none;
-            padding: 0;
-            margin: 0;
-        }
+
     </style>
 </head>
-<body class="flex flex-col items-center justify-center min-h-screen bg-beige-light text-gray-dark p-4">
+<body>
+    <!-- Contêiner principal do aplicativo -->
+    <div id="app-container" class="app-container">
 
-    <div class="bg-white rounded-xl shadow-lg p-8 md:p-12 max-w-2xl w-full text-center space-y-8">
-
-        <!-- Main Content View -->
-        <div id="main-content" class="flex flex-col items-center space-y-8">
-            <div class="flex flex-col items-center space-y-4 w-full">
-                <!-- O logo do Canva foi removido. Apenas o nome do APP será exibido. -->
-                <h1 class="text-5xl md:text-6xl font-extrabold mt-4">
-                    <span class="text-red-vibrant">Cateq</span><span class="text-beige-medium">App</span>
-                </h1>
-            </div>
-
-            <p class="text-lg md:text-xl font-medium text-gray-dark">
-                Bem-vindo, Catequista! Simplifique a gestão da sua turma e dedique mais tempo ao que realmente importa: a fé.
+        <!-- Página de Boas-Vindas -->
+        <div id="welcome-page" class="page">
+            <h1 class="cateqapp-logo mb-6">CateqApp</h1>
+            <p class="text-center text-gray-700 mb-8 text-lg leading-relaxed">
+                O CateqApp simplifica a gestão de turmas e o registro de presença para catequistas e coordenadores.
+                Centralize informações, acompanhe encontros e dedique mais tempo à formação espiritual.
+                Sua ferramenta digital intuitiva para a catequese.
             </p>
-
-            <div id="action-buttons" class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 justify-center mt-8">
-                <button id="btn-presenca" class="block w-full md:w-auto px-8 py-4 rounded-lg font-semibold text-lg bg-red-vibrant text-white shadow-md hover:bg-red-800 transition-colors duration-300">
+            <div class="flex justify-center">
+                <button onclick="showPage('communities-page')"
+                        class="bg-[#CC0000] hover:bg-red-700 text-white font-semibold py-3 px-8 rounded-lg shadow-lg
+                               transition-colors duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-red-300">
                     Registrar Presença
                 </button>
             </div>
         </div>
 
-        <!-- Community Selection View -->
-        <div id="community-selection-view" class="hidden flex flex-col items-center space-y-8 w-full">
-            <h2 class="text-3xl md:text-4xl font-bold text-gray-dark">Selecione sua Comunidade</h2>
-            <div id="community-buttons" class="flex flex-col space-y-4 w-full max-w-sm">
-                <!-- Buttons will be dynamically added here by JavaScript -->
+        <!-- Página de Comunidades -->
+        <div id="communities-page" class="page hidden-page">
+            <h2 class="text-[#333333] text-3xl font-bold mb-8 text-center">Comunidades</h2>
+            <div class="flex flex-col space-y-4 md:space-y-0 md:flex-row md:space-x-4 justify-center">
+                <button onclick="showTurmas('Matriz')"
+                        class="bg-[#CC0000] hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md
+                               transition-colors duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-red-300 w-full md:flex-1">
+                    Matriz
+                </button>
+                <button onclick="showTurmas('Santa Filomena')"
+                        class="bg-[#CC0000] hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md
+                               transition-colors duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-red-300 w-full md:flex-1">
+                    Santa Filomena
+                </button>
+                <button onclick="showTurmas('Nossa Senhora de Fátima')"
+                        class="bg-[#CC0000] hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md
+                               transition-colors duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-red-300 w-full md:flex-1">
+                    Nossa Senhora de Fátima
+                </button>
             </div>
-            <button id="btn-back-community" class="px-6 py-3 rounded-lg font-semibold text-base bg-red-vibrant text-white shadow-md hover:bg-red-800 transition-colors duration-300 mt-4">
-                Voltar
-            </button>
+            <div class="flex justify-center mt-8">
+                <button onclick="showPage('welcome-page')"
+                        class="bg-gray-400 hover:bg-gray-500 text-white font-semibold py-2 px-6 rounded-lg shadow-sm
+                               transition-colors duration-300 focus:outline-none focus:ring-4 focus:ring-gray-300">
+                    Voltar
+                </button>
+            </div>
         </div>
 
-        <!-- Catequista Selection View - REMOVIDA -->
-
-        <!-- Form View (now displays the iframe for Wellington, or an unauthorized message) -->
-        <div id="form-view" class="hidden flex flex-col items-center space-y-4 w-full">
-            <h2 class="text-3xl md:text-4xl font-bold text-gray-dark">Registro de Presença</h2>
-            <!-- Iframe do formulário de presença, visível apenas para Wellington -->
-            <iframe id="iframe-presenca" class="form-container hidden" src="https://docs.google.com/forms/d/e/1FAIpQLSfAOuVYWhvmmSTCv8v9knuXD6IOlFxJ9jVzd5wqga7lkhTgTA/viewform?embedded=true"></iframe>
-            <p id="unauthorized-message" class="hidden text-lg text-red-vibrant font-semibold">
-                Funcionalidade de registro de presença disponível apenas para o catequista Wellington no momento.
-            </p>
-            <button id="btn-back-form" class="px-6 py-3 rounded-lg font-semibold text-base bg-red-vibrant text-white shadow-md hover:bg-red-800 transition-colors duration-300 mt-4">
-                Voltar
-            </button>
+        <!-- Página de Turmas -->
+        <div id="turmas-page" class="page hidden-page">
+            <h2 id="turmas-title" class="text-[#333333] text-3xl font-bold mb-8 text-center">Turmas da Comunidade</h2>
+            <div id="turmas-list" class="flex flex-col gap-6 mb-8">
+                <!-- Categorias e Cards das turmas serão injetados aqui via JavaScript -->
+            </div>
+            <div id="google-forms-embed" class="hidden-page">
+                <iframe id="forms-iframe" class="google-forms-iframe" src="" frameborder="0" marginheight="0" marginwidth="0">Carregando…</iframe>
+            </div>
+            <div class="flex justify-center mt-8">
+                <button onclick="showPage('communities-page'); hideFormsIframe();"
+                        class="bg-gray-400 hover:bg-gray-500 text-white font-semibold py-2 px-6 rounded-lg shadow-sm
+                               transition-colors duration-300 focus:outline-none focus:ring-4 focus:ring-gray-300">
+                    Voltar
+                </button>
+            </div>
         </div>
 
-        <footer class="mt-12 text-sm text-gray-500">
-            <p>&copy; 2024 CateqApp. Conectando a fé, crescendo juntos.</p>
-            <p>Sua jornada na catequese facilitada.</p>
-        </footer>
     </div>
 
     <script>
-        const mainContent = document.getElementById('main-content');
-        const communitySelectionView = document.getElementById('community-selection-view');
-        const formView = document.getElementById('form-view');
-
-        const btnPresenca = document.getElementById('btn-presenca');
-        const communityButtonsContainer = document.getElementById('community-buttons');
-        const iframePresenca = document.getElementById('iframe-presenca');
-        const unauthorizedMessage = document.getElementById('unauthorized-message');
-
-        const btnBackCommunity = document.getElementById('btn-back-community');
-        const btnBackForm = document.getElementById('btn-back-form');
-
-        let currentView = 'main'; // Track current active view
-
-        const communities = {
-            "Matriz": ["Wellington", "João"],
-            "Santa Filomena": ["Kary", "Eder"],
-            "Nossa Senhora de Fátima": ["Debora", "Michelli"]
+        // Dados das comunidades e turmas, agora organizados por categorias
+        const communitiesData = {
+            "Matriz": {
+                "Pré Catequese": [],
+                "Primeira Eucaristia": [
+                    {
+                        name: "Catequese Sábado",
+                        year: "2026",
+                        catechists: "Edu, Paloma, Penha",
+                        formUrl: "https://docs.google.com/forms/d/e/1FAIpQLSfoUN-RaIiyTIFKzDps6WMBB7bIMe505W4MSKgvgW5KuETDRA/viewform?embedded=true"
+                    }
+                ],
+                "Crisma": [
+                    {
+                        name: "Crisma Domingo",
+                        year: "2026",
+                        catechists: "Wellington, Felipe",
+                        formUrl: "https://docs.google.com/forms/d/e/1FAIpQLSfAOuVYWhvmmSTCv8v9knuXD6IOlFxJ9jVzd5wqga7lkhTgTA/viewform?embedded=true"
+                    }
+                ]
+            },
+            "Santa Filomena": {
+                "Pré Catequese": [],
+                "Primeira Eucaristia": [
+                    {
+                        name: "Primeira Eucaristia - Sábado",
+                        year: "2027",
+                        catechists: "Kary, Virginia",
+                        formUrl: "https://docs.google.com/forms/d/e/1FAIpQLSfAOuVYWhvmmSTCv8v9knxXD6IOlFxJ9jVzd5wqga7lkhTgTA/viewform?embedded=true" // Placeholder
+                    }
+                ],
+                "Crisma": [
+                    {
+                        name: "Crisma - Domingo",
+                        year: "2027",
+                        catechists: "Éder",
+                        formUrl: "https://docs.google.com/forms/d/e/1FAIpQLSfoUN-RaIiyTIFKzDps6WMBB7bIMe505W4MSKgvgW5KuETDRA/viewform?embedded=true" // Placeholder
+                    }
+                ]
+            },
+            "Nossa Senhora de Fátima": {
+                "Pré Catequese": [],
+                "Primeira Eucaristia": [
+                    {
+                        name: "Primeira Eucaristia - Sábado", // Assumindo que "Catequese Infantil" se encaixa aqui
+                        year: "2027",
+                        catechists: "Michelle, Andreia",
+                        formUrl: "https://docs.google.com/forms/d/e/1FAIpQLSfAOuVYWhvmmSTCv8v9knxXD6IOlFxJ9jVzd5wqga7lkhTgTA/viewform?embedded=true" // Placeholder
+                    }
+                ],
+                "Crisma": []
+            }
         };
 
-        function hideAllViews() {
-            mainContent.classList.add('hidden');
-            communitySelectionView.classList.add('hidden');
-            formView.classList.add('hidden');
-            iframePresenca.classList.add('hidden');
-            unauthorizedMessage.classList.add('hidden');
-        }
-
-        function showView(viewId) {
-            hideAllViews();
-            document.getElementById(viewId).classList.remove('hidden');
-            currentView = viewId;
-        }
-
-        function renderCommunityButtons() {
-            communityButtonsContainer.innerHTML = ''; // Clear previous buttons
-            Object.keys(communities).forEach(communityName => {
-                const button = document.createElement('button');
-                button.className = 'block w-full px-8 py-4 rounded-lg font-semibold text-lg bg-beige-medium text-white shadow-md hover:bg-amber-800 transition-colors duration-300';
-                button.textContent = communityName;
-                button.addEventListener('click', () => handleCommunitySelection(communityName)); // Chama a nova função
-                communityButtonsContainer.appendChild(button);
+        // Função para mostrar uma página e esconder as outras
+        function showPage(pageId) {
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => {
+                if (page.id === pageId) {
+                    page.classList.remove('hidden-page');
+                } else {
+                    page.classList.add('hidden-page');
+                }
             });
-        }
-
-        // Função para lidar com a seleção da comunidade
-        function handleCommunitySelection(communityName) {
-            const catequistasInCommunity = communities[communityName];
-            if (catequistasInCommunity.includes('Wellington')) {
-                iframePresenca.classList.remove('hidden'); // Exibir o iframe para Wellington
-                unauthorizedMessage.classList.add('hidden'); // Esconder mensagem de não autorizado
-            } else {
-                iframePresenca.classList.add('hidden'); // Esconder o iframe para outros
-                unauthorizedMessage.classList.remove('hidden'); // Exibir mensagem de não autorizado
-            }
-            showView('form-view'); // Ir diretamente para a tela do formulário/status
-        }
-
-        function showCommunitySelectionView() { // Renomeada para clareza
-            renderCommunityButtons();
-            showView('community-selection-view');
-        }
-
-        function goBack() {
-            if (currentView === 'form-view') {
-                showView('community-selection-view'); // Volta para a seleção de comunidade
-            } else if (currentView === 'community-selection-view') {
-                showView('main-content'); // Volta para a tela principal
+            // Esconde o iframe do Google Forms ao mudar de página, a menos que seja a página de turmas e já esteja visível
+            if (pageId !== 'turmas-page' || document.getElementById('google-forms-embed').classList.contains('hidden-page')) {
+                hideFormsIframe();
             }
         }
 
-        // Event Listeners
-        btnPresenca.addEventListener('click', showCommunitySelectionView); // Chama a nova função
-        btnBackCommunity.addEventListener('click', goBack);
-        btnBackForm.addEventListener('click', goBack);
+        // Função para esconder o iframe do Google Forms
+        function hideFormsIframe() {
+            const formsEmbed = document.getElementById('google-forms-embed');
+            const formsIframe = document.getElementById('forms-iframe');
+            formsEmbed.classList.add('hidden-page');
+            formsIframe.src = ""; // Limpa o src para garantir que o formulário não seja carregado em segundo plano
+        }
 
-        // Initialize view
-        showView('main-content');
+        // Função para exibir as turmas de uma comunidade específica, divididas por categoria
+        function showTurmas(communityName) {
+            showPage('turmas-page'); // Mostra a página de turmas
+            document.getElementById('turmas-title').textContent = `Turmas da Comunidade ${communityName}`;
+            const turmasList = document.getElementById('turmas-list');
+            turmasList.innerHTML = ''; // Limpa a lista de turmas anterior
+            hideFormsIframe(); // Esconde o iframe ao carregar a lista de turmas
+
+            const categoriesOrder = ["Pré Catequese", "Primeira Eucaristia", "Crisma"];
+            const communityCategories = communitiesData[communityName];
+            let totalTurmasCount = 0;
+
+            categoriesOrder.forEach(categoryName => {
+                const turmas = communityCategories[categoryName];
+
+                if (turmas && turmas.length > 0) {
+                    totalTurmasCount += turmas.length;
+
+                    // Cria o título da categoria e o divisor
+                    const categoryHeading = document.createElement('h3');
+                    categoryHeading.className = "text-[#333333] text-2xl font-semibold mt-8 mb-4 border-b-2 border-gray-300 pb-2";
+                    categoryHeading.textContent = categoryName;
+                    turmasList.appendChild(categoryHeading);
+
+                    // Cria um contêiner para os cards dentro desta categoria para o layout em grid
+                    const categoryCardsContainer = document.createElement('div');
+                    categoryCardsContainer.className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6";
+                    turmasList.appendChild(categoryCardsContainer);
+
+                    turmas.forEach(turma => {
+                        const turmaCard = document.createElement('div');
+                        turmaCard.className = `
+                            bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300
+                            cursor-pointer transform hover:-translate-y-1 hover:scale-102
+                            border border-gray-200
+                        `;
+                        turmaCard.innerHTML = `
+                            <h3 class="text-xl font-semibold text-[#CC0000] mb-2">${turma.name}</h3>
+                            <p class="text-gray-700 text-sm mb-1"><span class="font-medium">Conclusão:</span> ${turma.year}</p>
+                            <p class="text-gray-700 text-sm"><span class="font-medium">Catequista(s):</span> ${turma.catechists}</p>
+                        `;
+                        // Adiciona o evento de clique para abrir o formulário
+                        turmaCard.onclick = () => openFormsIframe(turma.formUrl);
+                        categoryCardsContainer.appendChild(turmaCard);
+                    });
+                }
+            });
+
+            // Mensagem se nenhuma turma for encontrada em todas as categorias
+            if (totalTurmasCount === 0) {
+                turmasList.innerHTML = `<p class="text-center text-gray-600 col-span-full">Nenhuma turma cadastrada para esta comunidade.</p>`;
+            }
+        }
+
+        // Função para abrir o iframe do Google Forms
+        function openFormsIframe(formUrl) {
+            const formsEmbed = document.getElementById('google-forms-embed');
+            const formsIframe = document.getElementById('forms-iframe');
+            formsIframe.src = formUrl;
+            formsEmbed.classList.remove('hidden-page'); // Mostra o contêiner do iframe
+            // Rola para o iframe para que ele fique visível, especialmente em telas pequenas
+            formsIframe.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // Inicializa a página de boas-vindas ao carregar
+        document.addEventListener('DOMContentLoaded', () => {
+            showPage('welcome-page');
+        });
     </script>
 </body>
 </html>
